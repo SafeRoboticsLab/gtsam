@@ -113,6 +113,8 @@ public:
   /// Get results of latest isam2 update
   const ISAM2Result& getISAM2Result() const{ return isamResult_; }
 
+  bool valueExists(Key key) const { return isam_.valueExists(key); }
+
 protected:
 
   /** Create default parameters */
