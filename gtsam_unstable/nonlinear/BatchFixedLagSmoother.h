@@ -34,8 +34,10 @@ public:
   typedef boost::shared_ptr<BatchFixedLagSmoother> shared_ptr;
 
   /** default constructor */
-  BatchFixedLagSmoother(double smootherLag = 0.0, const LevenbergMarquardtParams& parameters = LevenbergMarquardtParams(), bool enforceConsistency = true) :
-    FixedLagSmoother(smootherLag), parameters_(parameters), enforceConsistency_(enforceConsistency) { };
+  BatchFixedLagSmoother(double smootherLag = 0.0, const LevenbergMarquardtParams& parameters = LevenbergMarquardtParams(), 
+    bool enforceConsistency = true, bool accept_local_optima = false) :
+    FixedLagSmoother(smootherLag), parameters_(parameters), enforceConsistency_(enforceConsistency),
+    accetLocalOptima_(accept_local_optima) { };
 
   /** destructor */
   ~BatchFixedLagSmoother() override { };
@@ -117,6 +119,9 @@ public:
       const NonlinearFactorGraph& graph, const Values& theta, const KeyVector& keys,
       const GaussianFactorGraph::Eliminate& eliminateFunction = EliminatePreferCholesky);
 
+  // check if the key is in the current values
+  bool valueExists(Key key) const { return theta_.exists(key); }
+
 protected:
 
   /** A typedef defining an Key-Factor mapping **/
@@ -177,6 +182,7 @@ private:
   static void PrintSymbolicFactor(const GaussianFactor::shared_ptr& factor);
   static void PrintSymbolicGraph(const NonlinearFactorGraph& graph, const std::string& label);
   static void PrintSymbolicGraph(const GaussianFactorGraph& graph, const std::string& label);
+  bool accetLocalOptima_;
 }; // BatchFixedLagSmoother
 
 } /// namespace gtsam

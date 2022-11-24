@@ -193,12 +193,11 @@ FixedLagSmoother::Result BatchFixedLagSmoother::optimize() {
   double lambda = parameters_.lambdaInitial;
   double lambdaFactor = parameters_.lambdaFactor;
   double lambdaUpperBound = parameters_.lambdaUpperBound;
-  double lambdaLowerBound = 1.0e-10;
+  double lambdaLowerBound = parameters_.lambdaLowerBound; //   1.0e-10;
   size_t maxIterations = parameters_.maxIterations;
   double relativeErrorTol = parameters_.relativeErrorTol;
   double absoluteErrorTol = parameters_.absoluteErrorTol;
   double errorTol = parameters_.errorTol;
-
   // Create a Values that holds the current evaluation point
   Values evalpoint = theta_.retract(delta_);
   result.error = factors_.error(evalpoint);
@@ -255,7 +254,7 @@ FixedLagSmoother::Result BatchFixedLagSmoother::optimize() {
         gttic(compute_error);
         double error = factors_.error(evalpoint);
         gttoc(compute_error);
-
+        // double delta_error  = result.error - error;
         if (error < result.error) {
           // Keep this change
           // Update the error value
@@ -278,12 +277,14 @@ FixedLagSmoother::Result BatchFixedLagSmoother::optimize() {
           }
           // End this lambda search iteration
           break;
-        } else {
+        }else if(accetLocalOptima_){
+          break;
+        }else {
           // Reject this change
           if (lambda >= lambdaUpperBound) {
             // The maximum lambda has been used. Print a warning and end the search.
             cout
-                << "Warning:  Levenberg-Marquardt giving up because cannot decrease error with maximum lambda"
+                << "\033[1;33m Warning: \033[0m Levenberg-Marquardt giving up because cannot decrease error with maximum lambda" 
                 << endl;
             break;
           } else {
